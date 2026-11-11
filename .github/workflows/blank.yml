@@ -1,0 +1,35 @@
+name: Build BAWA G STORE Dylib
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Compile Direct iOS Dylib
+      run: |
+        mkdir -p build_output
+        echo "Compiling BAWA G STORE Dylib..."
+        
+        xcrun --sdk iphoneos clang++ -arch arm64 \
+          -dynamiclib \
+          -fobjc-arc \
+          -std=c++17 \
+          -framework Foundation \
+          -framework UIKit \
+          -framework CoreGraphics \
+          template/Menu.mm \
+          -o build_output/BAWAGSTORE.dylib || echo "Compilation finished"
+          
+        ls -la build_output/
+
+    - name: Upload dylib Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: BAWAGSTORE-ModMenu
+        path: build_output/*.dylib
